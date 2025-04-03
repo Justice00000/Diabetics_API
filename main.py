@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, validator
 import joblib
@@ -48,10 +48,10 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins for development, update for production
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Define input data model
@@ -141,14 +141,18 @@ def retrain_model(new_data, new_label):
         if os.path.exists(TRAINING_DATA_PATH):
             data_df = pd.read_csv(TRAINING_DATA_PATH)
         else:
-            data_df = pd.DataFrame(columns=["Pregnancies", "Glucose", "BloodPressure", 
-                                            "SkinThickness", "Insulin", "BMI", 
-                                            "DiabetesPedigreeFunction", "Age", "Outcome"])
+            data_df = pd.DataFrame(columns=["Age", "Gender", "Polyuria", "Polydipsia", 
+                                            "sudden weight loss", "weakness", "Polyphagia", 
+                                            "Genital thrush", "visual blurring", "Itching", 
+                                            "Irritability", "delayed healing", "partial paresis", 
+                                            "muscle stiffness", "Alopecia", "Obesity", "Outcome"])
 
         # Convert new data to DataFrame and append
-        new_df = pd.DataFrame(new_data, columns=["Pregnancies", "Glucose", "BloodPressure", 
-                                                 "SkinThickness", "Insulin", "BMI", 
-                                                 "DiabetesPedigreeFunction", "Age"])
+        new_df = pd.DataFrame(new_data, columns=["Age", "Gender", "Polyuria", "Polydipsia", 
+                                                 "sudden weight loss", "weakness", "Polyphagia", 
+                                                 "Genital thrush", "visual blurring", "Itching", 
+                                                 "Irritability", "delayed healing", "partial paresis", 
+                                                 "muscle stiffness", "Alopecia", "Obesity"])
         new_df["Outcome"] = new_label
         data_df = pd.concat([data_df, new_df], ignore_index=True)
         data_df.to_csv(TRAINING_DATA_PATH, index=False)
